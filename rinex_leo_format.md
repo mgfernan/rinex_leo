@@ -89,12 +89,12 @@ A tentative list of constellations and satellite id's are considered below
 |`LEO constellation type`| Constellation | `LEO satellite id` |
 |:----------------------:|:-------------:|:------------------:|
 | `L` | Generic LEO-PNT constellation | custom |
-| `X` | Xona                      | NORAD id |
+| `P` | Xona                      | NORAD id |
 | `Y` | Geely                     | NORAD id |
-| `Z` | Starlink                  | NORAD id |
+| `X` | Starlink                  | NORAD id |
 | `O` | Oneweb                    | NORAD id |
 | `V` | Spire                     | NORAD id |
-| `T` | Centispace                | NORAD id |
+| `Z` | Centispace                | NORAD id |
 
 # Observable file
 
