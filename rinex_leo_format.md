@@ -100,37 +100,15 @@ A tentative list of constellations and satellite id's are considered below
 
 The limitation of 2-digit for the satellite ID in the Observation file is a
 major blocking point unless a breaking change is introduced in the format.
-A possible way forward would be to keep, in the measurement lines, the 2-digit
-satellite id notation as specified in the RINEX standard and using the
-constellation letter as usual (see table of LEO constellations above). For this
-to happen, a dictionary of alias that links the `LEO satellite id` with the
-temporary satellite designation (*alias*) will be required. This *alias* dictionary
-applies only to the observable file being processed. For that purpose, a `COMMENT`-like
-field with the label `SAT ID ASSIGNEMENT` could be used through two possible ways:
-
-- In the RINEX **header**. Example
+To address this issue, the full `LEO satellite id` (5 digits with zero padding) 
+will be used right after the constellation letter. The RINEX reader/writer
+will then require customized measurement line parser/formatter for MEO
+or LEO. An example of data file would be:
 
 ```
-     4.99           OBSERVATION DATA    M                   RINEX VERSION / TYPE
-ARGOS               ROKUBUN             20210702 000126 UTC PGM / RUN BY / DATE
-.
-.
-.
-Z95 = Z43012                                                SAT ID ASSIGNEMENT
-.
-.
-.
-                                                            END OF HEADER
-```
-
-- Using **EVENT FLAG**: Example:
-
-```
-> 2006 12 20 12  1  0.0000000  4 1
-Z95 = Z43012                                                SAT ID ASSIGNEMENT
 > 2022 12 20 12  1  4.6030000  0 30
 G23  24718012.436   129894024.173    24718009.543   101216196.673
-Z95    732793.036      732794.384
+Z43012    732793.036      732794.384
 ```
 
 ## Observable codes
