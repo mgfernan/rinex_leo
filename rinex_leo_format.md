@@ -123,6 +123,9 @@ identify the different measurments.
 | **LEO** | L1 / 1575.42 | C/A | C1C | L1C | D1C | S1C |
 |         | L5 / 1176.45 | C/A | C5C | L5C | D5C | S5C |
 |         | S[^1][^2] / 2492.028 | C/A | C9C | L9C | D9C | S9C |
+| **Xona** | X1 / 1593.3225 | C/A | C1C | L1C | D1C | S1C |
+|         | X5 / 1190.51625 | C/A | C5C | L5C | D5C | S5C |
+|         | XC / 5020.3725 | C/A | C9C | L9C | D9C | S9C |
 
 Additionaly, other authors propose the following bands:
 
