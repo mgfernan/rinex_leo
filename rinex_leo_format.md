@@ -103,7 +103,47 @@ major blocking point unless a breaking change is introduced in the format.
 To address this issue, the full `LEO satellite id` (5 digits with zero padding) 
 will be used right after the constellation letter. The RINEX reader/writer
 will then require customized measurement line parser/formatter for MEO
-or LEO. An example of data file would be:
+or LEO. 
+
+The format for the observable data record description, following the RINEX 4
+forma follows:
+
+```text
++----------------------------------------------------------------------------+
+|               OBSERVATION DATA FILE - DATA RECORD DESCRIPTION  (LEO)       |
++-------------+-------------------------------------------------+------------+
+| DESCRIPTION                                                   |   FORMAT   |
++---------------------------------------------------------------+------------+
+| EPOCH record                                                  |            |
+|                                                               |            |
+|     − Record start identifier : ">"                           |     A1     |
+| - Epoch:                                                      |            |
+|     - year (4 digits)                                         |    1X,I4   |
+|     - month, day, hour, min (2 digits)                        | 4(1X,I2.2) |
+|     - sec                                                     |    F11.7   |
+|     - Epoch flag [*]                                          |    2X,I1   |
+|     - Number of satellites in current epoch                   |     I3     |
+|     - (reserved)                                              |     6X     |
+|     - receiver clock offset (seconds, optional)               |    F15.12  |
+|                                                               |            |
+| [*] EPOCH FLAG follow the same definition as RINEX 4.0        |            |
+|                                                               |            |
++---------------------------------------------------------------+------------+
+| OBSERVATION record for LEO-PNT satellites [**]                |            |
+|                                                               |            |
+| - Satellite number (LEO system dependent, e.g. NORAD ID)      |    A1,I5   |
+| - m fields of observation data in the same sequence as given  |  m(F14.3,  |
+|   in the "SYS / # / OBS TYPES" header record                  |            |
+| - LLI              | each obs.type (same seq                  |     I1,    |
+| - Signal strength  | as given in header)                      |     I1)    |
+|                                                               |            |
+| [**] Observation records for MEO GNSS are the same as RINEX 4 |            |
+|                                                               |            |
++-------------+-------------------------------------------------+------------+
+```
+
+
+An example of data file would be:
 
 ```
 > 2022 12 20 12  1  4.6030000  0 30
