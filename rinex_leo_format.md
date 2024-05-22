@@ -57,6 +57,16 @@ ORBIT - 5           - IDOT (radians/sec)                        4X,4D19.12
                     - Delta n0 dot (radians/sec^2)
                     - toe week
                     - reserved
+
+ORBIT - 6           - reserved                                  4X,4D19.12
+                    - reserved
+                    - TGD
+                    - reserved
+
+ORBIT - 7           - ISC_S9C                                   4X,4D19.12
+                    - reserved
+                    - reserved
+                    - reserved
 ```
 
 An example of a navigation block for a Starlink LEO satellite 2434 is shown
@@ -66,12 +76,14 @@ satellite found at [Celestrak](https://celestrak.org/NORAD/elements/gp.php?GROUP
 
 ```
 > EPH Z02434
-    2023 11 02 11 10 24 0.000000000000e+00 0.000000000000e+00 0.000000000000e+00
+    2023 11 02 11 10 24 4.887547846484e-05 4.303787327448e-12 0.000000000000e+00
      0.000000000000e+00 0.000000000000e+00 1.989675347274e-09 4.642884733583e+00
      0.000000000000e+00 1.811000000000e-04 0.000000000000e+00 2.835776281159e+03
-     0.000000000000e+00 0.000000000000e+00 5.882354736496e+00 0.000000000000e+00
+     3.858240000000e+05 0.000000000000e+00 5.882354736496e+00 0.000000000000e+00
      9.288031413876e-01 0.000000000000e+00 1.642393223370e+00 0.000000000000e+00
-     0.000000000000e+00 0.000000000000e+00 0.000000000000e+00 0.000000000000e+00
+     0.000000000000e+00 0.000000000000e+00 2.286000000000e+03 0.000000000000e+00
+     0.000000000000e+00 0.000000000000e+00 1.027763024283e-09 0.000000000000e+00
+    -9.724269021370e-10 0.000000000000e+00 0.000000000000e+00 0.000000000000e+00
 ```
 
 The one-character `LEO constellation type`, would be specific to each
@@ -172,9 +184,24 @@ Additionaly, other authors propose the following bands:
 - C-band (e.g. 5020MHz, [De Bast et al., 2023])
 - Ka-band (e.g. 11 GHz, [Humphreys et al., 2023]), for compatibility with communication satellites (), albeit this can be greatly affected by channel losses [Prol et al., 2022]
 
+In the navigation block definition, placeholders for the *signal biases* have been reserved, which may
+depend on the navigation system. This will may eventually trigger the need of defining custom navigation
+blocks for each LEO constellation as well.
+
 [^1]:[Prol et al., 2022]
 
 [^2]:Parallelism to NavIC system, as per [Rinex 4.0 definition](https://files.igs.org/pub/data/format/rinex_4.01.pdf)
+
+### Signal biases: LEO
+
+As an example for the signal bias definition, tor the generic `LEO` constellation (`L`), the following convention could be used:
+
+- `TGD` ($t_{gd}$), similarly to the GPS system, this code delay should be used as is for single-frequency users
+- $ \frac{f_1^2}{f_5^2} \cdot t_{gd}$, should be used for L5- single frequency users
+- The `ISC_S9C` should be used in combination with the `TGD` for S9 single frequency users: $t_{gd} - ISC_{S9C}$
+
+Therefore, the clock definition for the LEO constellation is assumed to be the dual frequency clock 
+for the C1C and C5C ionospheric free combination.
 
 ## References
 
