@@ -43,7 +43,7 @@ ORBIT - 2           - C_uc (radians)                            4X,4D19.12
                     - C_us (radians)
                     - sqrt(A) (sqrt(m))
 
-ORBIT - 3           - reserved                                  4X,4D19.12
+ORBIT - 3           - toe sow (seconds of week)                 4X,4D19.12
                     - C_ic (radians)
                     - OMEGA0 (radians)
                     - C_is (radians)
@@ -55,7 +55,7 @@ ORBIT - 4           - i0 (radians)                              4X,4D19.12
 
 ORBIT - 5           - IDOT (radians/sec)                        4X,4D19.12
                     - Delta n0 dot (radians/sec^2)
-                    - reserved
+                    - toe week
                     - reserved
 ```
 
