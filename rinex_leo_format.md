@@ -194,14 +194,14 @@ blocks for each LEO constellation as well.
 
 ### Signal biases: LEO
 
-As an example for the signal bias definition, tor the generic `LEO` constellation (`L`), the following convention could be used:
+Based on the convention used in GPS, described in, for instance, Paragraph 20.3.3.3.1.2.1 of GPS [ICD IS-GPS-705H](https://www.gps.gov/technical/icwg/IS-GPS-705H.pdf) (page 78), the single-frequency observables could be obtained by correcting the *dual-frequency ionospheric-free* clock  broadcasted by the navigation message.
 
-- `TGD` ($t_{gd}$), similarly to the GPS system, this code delay should be used as is for single-frequency users
-- $ \frac{f_1^2}{f_5^2} \cdot t_{gd}$, should be used for L5- single frequency users
-- The `ISC_S9C` should be used in combination with the `TGD` for S9 single frequency users: $t_{gd} - ISC_{S9C}$
+For the generic `LEO` constellation (`L`), it is assumed that the clock ($\Delta t_{SV}$) has been computed using the C1C and C5C ionospheric free combination. Therefore, the single-frequency *clocks* could be computed as follows:
 
-Therefore, the clock definition for the LEO constellation is assumed to be the dual frequency clock 
-for the C1C and C5C ionospheric free combination.
+- $(\Delta t_{SV})_{C1C} = \Delta t_{SV} - t_{gd}$, where $t_{gd}$ corresponds to the `TGD` parameter of the RINEX file.
+- $(\Delta t_{SV})_{C5C} = \Delta t_{SV} - (f_{L1}/f_{L5})^2 \cdot t_{gd}$
+- $(\Delta t_{SV})_{C9C} = \Delta t_{SV} - t_{gd} + ISC_{S9C}$, where $ISC_{S9C}$ corresponds to the `ISC_S9C` parameter of the RINEX file
+
 
 ## References
 
