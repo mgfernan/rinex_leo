@@ -1,6 +1,6 @@
 # RINEX-LEO
 
-This section includes the modifications proposed by Rokubun to accomodate
+This section includes the modifications proposed by Rokubun to accommodate
 LEO data in the [RINEX 4.01 format](https://files.igs.org/pub/data/format/rinex_4.01.pdf).
 
 One of the main objectives of having a RINEX file adapted for LEO is having a
@@ -8,7 +8,7 @@ consistency of satellite ID between Navigation and Observation files. This
 makes it easy to analyze data (either real or simulated) and obtain various
 performance metrics.
 
-# Navigation file
+## Navigation file
 
 For navigation files, this proposal takes advantage of the fact that the
 navigation blocks are preceded by a header (starting with `>`), which allows
@@ -20,7 +20,7 @@ lengths of subsequent fields of the `EPOCH / SV CLOCK` line.
 The proposal for the extension is as follows (following the same format
 description used in the RINEX format):
 
-```
+```text
 TYPE / SV           - New Record identifier: '>'                A1
                     - Navigation Data Record Type – 'EPH'       1X,A3
                     - LEO constellation type                    1X,A1
@@ -74,7 +74,7 @@ below. This example has been built transforming the TLE elements of the Starlink
 satellite found at [Celestrak](https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=tle) and assuming no orbit perturbations
 (see [[Garcia-Fernandez, 2023]](https://arxiv.org/pdf/2401.17767)).
 
-```
+```text
 > EPH Z02434
     2023 11 02 11 10 24 4.887547846484e-05 4.303787327448e-12 0.000000000000e+00
      0.000000000000e+00 0.000000000000e+00 1.989675347274e-09 4.642884733583e+00
@@ -98,24 +98,27 @@ TLE entry for this Starlink satellites.
 
 A tentative list of constellations and satellite id's are considered below
 
-|`LEO constellation type`| Constellation | `LEO satellite id` |
-|:----------------------:|:-------------:|:------------------:|
-| `L` | Generic LEO-PNT constellation | custom |
-| `P` | Xona                      | NORAD id |
-| `Y` | Geely                     | NORAD id |
-| `X` | Starlink                  | NORAD id |
-| `O` | Oneweb                    | NORAD id |
-| `V` | Spire                     | NORAD id |
-| `Z` | Centispace                | NORAD id |
+| `LEO constellation type`  | Constellation                  | `LEO satellite id` |
+|:-------------------------:|:------------------------------:|:------------------:|
+| `Z`                       | Centispace                     | NORAD id           |
+| `Y`                       | Geely                          | NORAD id           |
+| `L`                       | Generic LEO-PNT constellation  | custom             |
+| `A`                       | Globalstar                     | NORAD id           |
+| `D`                       | Iridium                        | NORAD id           |
+| `O`                       | Oneweb                         | NORAD id           |
+| `B`                       | Orbcomm                        | NORAD id           |
+| `V`                       | Spire                          | NORAD id           |
+| `X`                       | Starlink                       | NORAD id           |
+| `P`                       | Xona                           | NORAD id           |
 
-# Observable file
+## Observable file
 
 The limitation of 2-digit for the satellite ID in the Observation file is a
 major blocking point unless a breaking change is introduced in the format.
-To address this issue, the full `LEO satellite id` (5 digits with zero padding) 
+To address this issue, the full `LEO satellite id` (5 digits with zero padding)
 will be used right after the constellation letter. The RINEX reader/writer
 will then require customized measurement line parser/formatter for MEO
-or LEO. 
+or LEO.
 
 The format for the observable data record description, following the RINEX 4
 forma follows:
@@ -154,10 +157,9 @@ forma follows:
 +-------------+-------------------------------------------------+------------+
 ```
 
-
 An example of data file would be:
 
-```
+```text
 > 2022 12 20 12  1  4.6030000  0 30
 G23  24718012.436   129894024.173    24718009.543   101216196.673
 Z43012    732793.036      732794.384
@@ -166,20 +168,18 @@ Z43012    732793.036      732794.384
 ## Observable codes
 
 Another important aspect of the RINEX observation types are the codes that
-identify the different measurments. 
-
-
+identify the different measurements.
 
 | GNSS system | Freq. band / frequency | Channel or code| Pseudo range | Carrier phase | Doppler | Signal strength |
-|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
-| **LEO** | L1 / 1575.42 | C/A | C1C | L1C | D1C | S1C |
-|         | L5 / 1176.45 | C/A | C5C | L5C | D5C | S5C |
-|         | S[^1][^2] / 2492.028 | C/A | C9C | L9C | D9C | S9C |
-| **Xona** | X1 / 1593.3225 | C/A | C1C | L1C | D1C | S1C |
-|         | X5 / 1190.51625 | C/A | C5C | L5C | D5C | S5C |
-|         | XC / 5020.3725 | C/A | C9C | L9C | D9C | S9C |
+|:-----------:|:----------------------:|:--------------:|:------------:|:-------------:|:-------:|:---------------:|
+| **LEO**     | L1 / 1575.42           | C/A            | C1C          | L1C           | D1C     | S1C             |
+|             | L5 / 1176.45           | C/A            | C5C          | L5C           | D5C     | S5C             |
+|             | S[^1][^2] / 2492.028   | C/A            | C9C          | L9C           | D9C     | S9C             |
+| **Xona**    | X1 / 1593.3225         | C/A            | C1C          | L1C           | D1C     | S1C             |
+|             | X5 / 1190.51625        | C/A            | C5C          | L5C           | D5C     | S5C             |
+|             | XC / 5020.3725         | C/A            | C9C          | L9C           | D9C     | S9C             |
 
-Additionaly, other authors propose the following bands:
+Additionally, other authors propose the following bands:
 
 - C-band (e.g. 5020MHz, [De Bast et al., 2023])
 - Ka-band (e.g. 11 GHz, [Humphreys et al., 2023]), for compatibility with communication satellites (), albeit this can be greatly affected by channel losses [Prol et al., 2022]
@@ -202,9 +202,7 @@ For the generic `LEO` constellation (`L`), it is assumed that the clock ($\Delta
 - $(\Delta t_{SV})_{C5C} = \Delta t_{SV} - (f_{L1}/f_{L5})^2 \cdot t_{gd}$
 - $(\Delta t_{SV})_{C9C} = \Delta t_{SV} - t_{gd} + ISC_{S9C}$, where $ISC_{S9C}$ corresponds to the `ISC_S9C` parameter of the RINEX file
 
-
 ## References
-
 
 [De Bast et al., 2023] De Bast, Sibren, Jean-Marie Sleewaegen, and Wim De Wilde. "Analysis of Multipath Code-Range Errors in Future LEO-PNT Systems." Engineering Proceedings 54, no. 1 (2023): 34.
 
