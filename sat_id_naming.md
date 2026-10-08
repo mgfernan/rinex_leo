@@ -29,16 +29,16 @@ The two approaches remain to be reconciled.
 Taking as a starting point the 2-digit characters, that could be based on the
 [NMEA Talker ID](https://gpsd.gitlab.io/gpsd/NMEA.html#_talker_ids)
 
-|NMEA Talker ID| Numerical ID | Constellation |
-|:----------:|:------------:|:-------------|
-| 00 | 0 | Undefined |
-| GA | 2 | Galileo Positioning System |
-| GB | 3 | BeiDou (China) |
-| GI |   | NavIC, IRNSS (India) |
-| GL | 4 | GLONASS, according to IEIC 61162-1 |
-| GN |   | Combination of multiple satellite systems (NMEA 1083) |
-| GP | 1 | Global Positioning System receiver |
-| GQ |   | QZSS regional GPS augmentation system (Japan) |
+|NMEA Talker ID| Numerical ID | Constellation                                         |
+|:------------:|:------------:|:------------------------------------------------------|
+| 00           | 0            | Undefined                                             |
+| GA           | 2            | Galileo Positioning System                            |
+| GB           | 3            | BeiDou (China)                                        |
+| GI           |              | NavIC, IRNSS (India)                                  |
+| GL           | 4            | GLONASS, according to IEIC 61162-1                    |
+| GN           |              | Combination of multiple satellite systems (NMEA 1083) |
+| GP           | 1            | Global Positioning System receiver                    |
+| GQ           |              | QZSS regional GPS augmentation system (Japan)         |
 
 ## Satellite ID
 
