@@ -1,8 +1,10 @@
 # RINEX for LEO-PNT mega-constellations
 
 This repository includes a proposal of modifications to accommodate LEO PNT data
-(observables and ephemeris) using RINEX format (version 4). It thus contains a
-proposal for both the Navigation and Observable RINEX files.
+(observables and ephemeris) using RINEX format. The current proposal is based on
+RINEX 4.01 and identifies its RINEX-LEO extension version separately in the file
+header, so the RINEX and extension versions can evolve independently. It thus
+contains a proposal for both the Navigation and Observable RINEX files.
 
 ## LEO-PNT Datasets
 

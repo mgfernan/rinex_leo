@@ -1,7 +1,37 @@
 # RINEX-LEO
 
-This section includes the modifications proposed by Rokubun to accommodate
-LEO data in the [RINEX 4.01 format](https://files.igs.org/pub/data/format/rinex_4.01.pdf).
+This section describes the RINEX-LEO extension proposed by Rokubun. The current
+proposal is based on the
+[RINEX 4.01 format](https://files.igs.org/pub/data/format/rinex_4.01.pdf).
+
+## File header and versioning
+
+RINEX-LEO files use the standard `RINEX VERSION / TYPE` record to declare the
+underlying RINEX version, and add a separate `RINEX-LEO EXTENSION` record to
+declare the RINEX-LEO extension version. The namespaced label reduces the risk
+of colliding with a header record introduced by a future RINEX release. The two
+version numbers identify independent things: a future RINEX release (for
+example, RINEX 5 or 6) is reflected in `RINEX VERSION / TYPE`, and does not by
+itself change the RINEX-LEO extension version.
+
+The `RINEX-LEO EXTENSION` record is required exactly once in the header of a
+RINEX-LEO file. As with other RINEX header records, its label occupies columns
+61–80; the extension name and version occupy the data area in columns 1–60.
+Place it immediately after `RINEX VERSION / TYPE`. It is an extension header
+record, so generic RINEX readers may skip it; RINEX-LEO readers must recognize
+and validate it. For example:
+
+```text
+     4.01          OBSERVATION DATA    M                    RINEX VERSION / TYPE
+RINEX-LEO 1.00                                              RINEX-LEO EXTENSION
+```
+
+The extension version uses `major.minor` notation. Increment the major
+component for incompatible changes to the RINEX-LEO extension and the minor
+component for backward-compatible changes. A reader must not infer the
+extension version from the RINEX version; it should report an unsupported
+extension version rather than silently interpreting it as a version it
+understands.
 
 One of the main objectives of having a RINEX file adapted for LEO is having a
 consistency of satellite ID between Navigation and Observation files. This
@@ -121,7 +151,7 @@ will then require customized measurement line parser/formatter for MEO
 or LEO.
 
 The format for the observable data record description, following the RINEX 4
-forma follows:
+format, is:
 
 ```text
 +----------------------------------------------------------------------------+
