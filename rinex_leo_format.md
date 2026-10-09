@@ -210,15 +210,35 @@ identify the different measurements.
 |             | XC / 5020.3725         | C/A            | C9C          | L9C           | D9C     | S9C             |
 | **Globalstar** | S / 2486.1          | -              | -            | -             | D9C     | S9C             |
 | **Iridium** | L / 1626.270833        | -              | -            | -             | D6C     | S6C             |
-| **Orbcomm** | VHF / 137.2 (centre)   | -              | -            | -             | D3C     | S3C             |
+| **Orbcomm** | VHF / 137.2 (centre)   | FDMA, see below| -            | -             | D3C     | S3C             |
 
 Signals of opportunity (Globalstar, Iridium, Orbcomm) only provide Doppler and
 signal strength (C/N0, dB-Hz). Band digits `6` and `3` are only meaningful within their own
-constellation. Orbcomm uses an FDMA-like scheme, so the carrier frequency of each
-observation is stored in the custom observable `F3C` (`F` for frequency): the integer
-slot number with respect to the 137.2 MHz centre frequency, with 2.5 kHz slots, i.e.
-$f = 137.2\,\mathrm{MHz} + 2.5\,\mathrm{kHz} \cdot F3C$. The nominal band frequencies
-can be documented in `COMMENT` header records.
+constellation. The nominal band frequencies can be documented in `COMMENT` header records.
+
+### Frequency slot observable (`F`)
+
+FDMA constellations transmit on several carrier frequencies, so the frequency of
+each observation must be recorded. For this purpose, the observable type `F`
+(*Frequency slot*) is defined:
+
+| Observable | Description                                     | Units            | Format    |
+|:----------:|:-----------------------------------------------:|:----------------:|:---------:|
+| `Fna`      | Frequency slot of the carrier, `n` band, `a` attribute | integer slot number | F14.3 (integer value, e.g. `205.000`) |
+
+The frequency is obtained from the slot number as
+
+$$f = f_{c} + \Delta f \cdot F$$
+
+where the centre frequency $f_{c}$ and slot size $\Delta f$ are defined by the constellation:
+
+| Constellation | Observable | Centre frequency $f_{c}$ | Slot size $\Delta f$ | Example                                   |
+|:-------------:|:----------:|:------------------------:|:--------------------:|:-----------------------------------------:|
+| **Orbcomm**   | `F3C`      | 137.2 MHz                | 2.5 kHz              | `F3C = 205` → 137.2 MHz + 512.5 kHz = 137.7125 MHz |
+
+`F` observables are listed in `SYS / # / OBS TYPES` like any other observable (for
+Orbcomm: `B    3 D3C S3C F3C`), are written with the usual `F14.3` field, and carry no
+LLI nor signal strength flag. Readers not supporting the `F` observable can ignore it.
 
 Additionally, other authors propose the following bands:
 
