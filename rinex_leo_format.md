@@ -208,6 +208,17 @@ identify the different measurements.
 | **Xona**    | X1 / 1593.3225         | C/A            | C1C          | L1C           | D1C     | S1C             |
 |             | X5 / 1190.51625        | C/A            | C5C          | L5C           | D5C     | S5C             |
 |             | XC / 5020.3725         | C/A            | C9C          | L9C           | D9C     | S9C             |
+| **Globalstar** | S / 2486.1          | -              | -            | -             | D9C     | S9C             |
+| **Iridium** | L / 1626.270833        | -              | -            | -             | D6C     | S6C             |
+| **Orbcomm** | VHF / 137.2 (centre)   | -              | -            | -             | D3C     | S3C             |
+
+Signals of opportunity (Globalstar, Iridium, Orbcomm) only provide Doppler and
+signal strength (C/N0, dB-Hz). Band digits `6` and `3` are only meaningful within their own
+constellation. Orbcomm uses an FDMA-like scheme, so the carrier frequency of each
+observation is stored in the custom observable `F3C` (`F` for frequency): the integer
+slot number with respect to the 137.2 MHz centre frequency, with 2.5 kHz slots, i.e.
+$f = 137.2\,\mathrm{MHz} + 2.5\,\mathrm{kHz} \cdot F3C$. The nominal band frequencies
+can be documented in `COMMENT` header records.
 
 Additionally, other authors propose the following bands:
 
