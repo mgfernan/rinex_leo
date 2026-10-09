@@ -310,7 +310,8 @@ D    2 D6C S6C                                              SYS / # / OBS TYPES
 | Orbcomm       | `B`    | 3          | 137.2 MHz centre  | `D3C S3C F3C`       | Doppler (Hz), C/N0 (dB-Hz), slot (integer)    |
 
 - `D?C` is the measured Doppler shift in Hz, copied without any sign change from
-  the source measurements.
+  the source measurements. It follows the RINEX definition: positive when the
+  satellite is approaching the receiver.
 - `S?C` contains the signal-to-noise density ratio (C/N0) in dB-Hz as a regular
   `F14.3` value, **not** the 1-digit signal strength flag of RINEX.
 - The LLI and signal strength flag characters that follow each value are blank.
