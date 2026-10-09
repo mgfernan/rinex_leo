@@ -22,7 +22,7 @@ record, so generic RINEX readers may skip it; RINEX-LEO readers must recognize
 and validate it. For example:
 
 ```text
-     4.01          OBSERVATION DATA    M                    RINEX VERSION / TYPE
+     4.01           OBSERVATION DATA    M                   RINEX VERSION / TYPE
 RINEX-LEO 1.00                                              RINEX-LEO EXTENSION
 ```
 
@@ -262,6 +262,108 @@ For the generic `LEO` constellation (`L`), it is assumed that the clock ($\Delta
 - $(\Delta t_{SV})_{C1C} = \Delta t_{SV} - t_{gd}$, where $t_{gd}$ corresponds to the `TGD` parameter of the RINEX file.
 - $(\Delta t_{SV})_{C5C} = \Delta t_{SV} - (f_{L1}/f_{L5})^2 \cdot t_{gd}$
 - $(\Delta t_{SV})_{C9C} = \Delta t_{SV} - t_{gd} + ISC_{S9C}$, where $ISC_{S9C}$ corresponds to the `ISC_S9C` parameter of the RINEX file
+
+### Header records
+
+Records are written in this order. All header lines are 80 characters long:
+columns 1–60 contain the data and columns 61–80 the label.
+
+| Label                  | Content / format                                                                 |
+|:-----------------------|:---------------------------------------------------------------------------------|
+| `RINEX VERSION / TYPE` | `F9.2,11X,A20,A20`: `4.01`, `OBSERVATION DATA`, `M` (mixed)                      |
+| `RINEX-LEO EXTENSION`  | `RINEX-LEO 1.00`                                                                 |
+| `PGM / RUN BY / DATE`  | `A20,A20,` date as `yyyymmdd hhmmss UTC`                                          |
+| `COMMENT` (optional)   | Free text. `pygnss` documents the band and nominal frequency of each constellation, e.g. `B: band 3, 137.200000 MHz` and `B: F = slot of 2.5 kHz` |
+| `MARKER NAME`          | `A60`; receiver/station name                                                     |
+| `APPROX POSITION XYZ`  | `3F14.4`; ECEF position of the receiver (m)                                      |
+| `SYS / # / OBS TYPES`  | `A1,2X,I3,13(1X,A3)`; one record per constellation (up to 13 types per line; continuation lines start with 6 blanks) |
+| `TIME OF FIRST OBS`    | `5I6,F13.7,5X,A3`; first epoch and time system (`GPS` or `UTC`)                  |
+| `TIME OF LAST OBS`     | Same format, last epoch                                                          |
+| `END OF HEADER`        | Empty                                                                            |
+
+Example (Globalstar `A`, Orbcomm `B` and Iridium `D`):
+
+```text
+     4.01           OBSERVATION DATA    M                   RINEX VERSION / TYPE
+RINEX-LEO 1.00                                              RINEX-LEO EXTENSION
+pygnss                                  20261009 093836 UTC PGM / RUN BY / DATE
+A: band 9, 2486.100000 MHz                                  COMMENT
+D: band 6, 1626.270833 MHz                                  COMMENT
+B: band 3, 137.200000 MHz                                   COMMENT
+B: F = slot of 2.5 kHz                                      COMMENT
+LEO                                                         MARKER NAME
+  4780861.4222   176383.0427  4204318.1078                  APPROX POSITION XYZ
+A    2 D9C S9C                                              SYS / # / OBS TYPES
+B    3 D3C S3C F3C                                          SYS / # / OBS TYPES
+D    2 D6C S6C                                              SYS / # / OBS TYPES
+  2026    10     1     0     0   19.6169900     GPS         TIME OF FIRST OBS
+  2026    10     1     0     8   17.9919020     GPS         TIME OF LAST OBS
+                                                            END OF HEADER
+```
+
+### Observables per constellation
+
+| Constellation | Letter | Band digit | Nominal frequency | Observation types   | Units                                         |
+|:-------------:|:------:|:----------:|:-----------------:|:-------------------:|:----------------------------------------------|
+| Globalstar    | `A`    | 9          | 2486.1 MHz        | `D9C S9C`           | Doppler (Hz), C/N0 (dB-Hz)                    |
+| Iridium       | `D`    | 6          | 1626.270833 MHz   | `D6C S6C`           | Doppler (Hz), C/N0 (dB-Hz)                    |
+| Orbcomm       | `B`    | 3          | 137.2 MHz centre  | `D3C S3C F3C`       | Doppler (Hz), C/N0 (dB-Hz), slot (integer)    |
+
+- `D?C` is the measured Doppler shift in Hz, copied without any sign change from
+  the source measurements.
+- `S?C` contains the signal-to-noise density ratio (C/N0) in dB-Hz as a regular
+  `F14.3` value, **not** the 1-digit signal strength flag of RINEX.
+- The LLI and signal strength flag characters that follow each value are blank.
+- A missing measurement is written as 16 blanks (`F14.3` plus the 2 flag characters).
+- There are no pseudorange nor carrier phase observables.
+
+### Observation records
+
+- The epoch record follows the format above. Times are written with 0.1 µs
+  resolution (`F11.7`). Fields of the epoch may be blank-padded (`> 2026 10  1  0  0 19.6169900`)
+  or zero-padded; readers must accept both. The epoch flag is `0` and the receiver
+  clock offset is not written.
+- The time system is declared in `TIME OF FIRST OBS` / `TIME OF LAST OBS`.
+  `pygnss` writes GPS time by default (UTC plus the GPS-UTC leap seconds, 18 s since 2017)
+  and optionally UTC.
+- Epoch records are written in increasing time order. Measurements with
+  exactly the same time (after rounding to 0.1 µs) share an epoch; no
+  binning is done. Within an epoch, satellites are sorted by their identifier.
+- Satellite identifiers are the constellation letter followed by the 5-digit
+  zero-padded NORAD id (`A37741`, `D41921`, `B41182`).
+
+Example of observation records (the third and fourth lines show an Orbcomm
+satellite with `D3C`, `S3C` and `F3C`, and an Iridium satellite):
+
+```text
+> 2026 10  1  0  0 19.6169900  0  1
+A37741    -19706.715          11.280
+> 2026 10  1  0  1 37.2938220  0  1
+B41182      2270.507           3.680         205.000
+> 2026 10  1  0  0 48.5935590  0  1
+D41921     34545.898           7.280
+```
+
+The `F14.3` field of `F3C` contains the integer slot (`205.000` above), so the Orbcomm
+carrier frequency of that observation is 137.2 MHz + 205 · 2.5 kHz = 137.7125 MHz.
+
+### Satellite names and NORAD ids
+
+The measurements identify satellites by its NORAD ID number. Some examples of satellite names and their corresponding NORAD ids are shown below:
+
+| Name              | NORAD id |
+|:------------------|:--------:|
+| GLOBALSTAR M078   | 39076    |
+| GLOBALSTAR M086   | 38045    |
+| GLOBALSTAR M091   | 37741    |
+| IRIDIUM 103       | 41918    |
+| IRIDIUM 105       | 41921    |
+| IRIDIUM 109       | 41919    |
+| IRIDIUM 166       | 43570    |
+| ORBCOMM FM110     | 41182    |
+
+Other names can be resolved with the object name in the CelesTrak catalogue
+(`https://celestrak.org/NORAD/elements/gp.php?NAME=<name>&FORMAT=json`, field `NORAD_CAT_ID`).
 
 ## References
 
