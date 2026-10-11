@@ -21,7 +21,7 @@ struct satellite {
 
 This is a separate, exploratory proposal and is not the satellite-ID format
 specified in [`rinex_leo_format.md`](./rinex_leo_format.md), which currently
-uses a one-character constellation type and a five-digit satellite ID for LEO.
+uses a one-character constellation type and a six-digit satellite ID for LEO.
 The two approaches remain to be reconciled.
 
 ## Constellation ID

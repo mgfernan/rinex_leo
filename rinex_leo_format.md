@@ -23,7 +23,7 @@ and validate it. For example:
 
 ```text
      4.01           OBSERVATION DATA    M                   RINEX VERSION / TYPE
-RINEX-LEO 1.00                                              RINEX-LEO EXTENSION
+RINEX-LEO 2.00                                              RINEX-LEO EXTENSION
 ```
 
 The extension version uses `major.minor` notation. Increment the major
@@ -54,7 +54,7 @@ description used in the RINEX format):
 TYPE / SV           - New Record identifier: '>'                A1
                     - Navigation Data Record Type – 'EPH'       1X,A3
                     - LEO constellation type                    1X,A1
-                    - LEO satellite id                          I5
+                    - LEO satellite id                          I6
 
 EPOCH / SV CLK      - Void spaces (Sat ID already in header)    3X
                     - year (4 digits)                           1X,I4
@@ -105,7 +105,7 @@ satellite found at [Celestrak](https://celestrak.org/NORAD/elements/gp.php?GROUP
 (see [[Garcia-Fernandez, 2023]](https://arxiv.org/pdf/2401.17767)).
 
 ```text
-> EPH Z02434
+> EPH Z002434
     2023 11 02 11 10 24 4.887547846484e-05 4.303787327448e-12 0.000000000000e+00
      0.000000000000e+00 0.000000000000e+00 1.989675347274e-09 4.642884733583e+00
      0.000000000000e+00 1.811000000000e-04 0.000000000000e+00 2.835776281159e+03
@@ -120,7 +120,7 @@ The one-character `LEO constellation type`, would be specific to each
 constellation. Obviously, an "official" list of constellation types would have
 to be agreed upon.
 
-The `LEO satellite id` field (5 digits) will identify the Space Vehicle
+The `LEO satellite id` field (6 digits) will identify the Space Vehicle
 (constellation dependent, PRN number for MEO satellites). Similarly to the
 constellation type, the list of the IDs will have to be agreed upon as well.
 In the example provided, the ID has been extracted from the first field of the
@@ -145,7 +145,7 @@ A tentative list of constellations and satellite id's are considered below
 
 The limitation of 2-digit for the satellite ID in the Observation file is a
 major blocking point unless a breaking change is introduced in the format.
-To address this issue, the full `LEO satellite id` (5 digits with zero padding)
+To address this issue, the full `LEO satellite id` (6 digits with zero padding)
 will be used right after the constellation letter. The RINEX reader/writer
 will then require customized measurement line parser/formatter for MEO
 or LEO.
@@ -176,7 +176,7 @@ format, is:
 +---------------------------------------------------------------+------------+
 | OBSERVATION record for LEO-PNT satellites [**]                |            |
 |                                                               |            |
-| - Satellite number (LEO system dependent, e.g. NORAD ID)      |    A1,I5   |
+| - Satellite number (LEO system dependent, e.g. NORAD ID)      |    A1,I6   |
 | - m fields of observation data in the same sequence as given  |  m(F14.3,  |
 |   in the "SYS / # / OBS TYPES" header record                  |            |
 | - LLI              | each obs.type (same seq                  |     I1,    |
@@ -192,7 +192,7 @@ An example of data file would be:
 ```text
 > 2022 12 20 12  1  4.6030000  0 30
 G23  24718012.436   129894024.173    24718009.543   101216196.673
-Z43012    732793.036      732794.384
+Z043012    732793.036      732794.384
 ```
 
 ## Observable codes
@@ -271,7 +271,7 @@ columns 1–60 contain the data and columns 61–80 the label.
 | Label                  | Content / format                                                                 |
 |:-----------------------|:---------------------------------------------------------------------------------|
 | `RINEX VERSION / TYPE` | `F9.2,11X,A20,A20`: `4.01`, `OBSERVATION DATA`, `M` (mixed)                      |
-| `RINEX-LEO EXTENSION`  | `RINEX-LEO 1.00`                                                                 |
+| `RINEX-LEO EXTENSION`  | `RINEX-LEO 2.00`                                                                 |
 | `PGM / RUN BY / DATE`  | `A20,A20,` date as `yyyymmdd hhmmss UTC`                                          |
 | `COMMENT` (optional)   | Free text. `pygnss` documents the band and nominal frequency of each constellation, e.g. `B: band 3, 137.200000 MHz` and `B: F = slot of 2.5 kHz` |
 | `MARKER NAME`          | `A60`; receiver/station name                                                     |
@@ -285,7 +285,7 @@ Example (Globalstar `A`, Orbcomm `B` and Iridium `D`):
 
 ```text
      4.01           OBSERVATION DATA    M                   RINEX VERSION / TYPE
-RINEX-LEO 1.00                                              RINEX-LEO EXTENSION
+RINEX-LEO 2.00                                              RINEX-LEO EXTENSION
 pygnss                                  20261009 093836 UTC PGM / RUN BY / DATE
 A: band 9, 2486.100000 MHz                                  COMMENT
 D: band 6, 1626.270833 MHz                                  COMMENT
@@ -330,19 +330,19 @@ D    2 D6C S6C                                              SYS / # / OBS TYPES
 - Epoch records are written in increasing time order. Measurements with
   exactly the same time (after rounding to 0.1 µs) share an epoch; no
   binning is done. Within an epoch, satellites are sorted by their identifier.
-- Satellite identifiers are the constellation letter followed by the 5-digit
-  zero-padded NORAD id (`A37741`, `D41921`, `B41182`).
+- Satellite identifiers are the constellation letter followed by the 6-digit
+  zero-padded NORAD id (`A037741`, `D041921`, `B041182`).
 
 Example of observation records (the third and fourth lines show an Orbcomm
 satellite with `D3C`, `S3C` and `F3C`, and an Iridium satellite):
 
 ```text
 > 2026 10  1  0  0 19.6169900  0  1
-A37741    -19706.715          11.280
+A037741    -19706.715          11.280
 > 2026 10  1  0  1 37.2938220  0  1
-B41182      2270.507           3.680         205.000
+B041182      2270.507           3.680         205.000
 > 2026 10  1  0  0 48.5935590  0  1
-D41921     34545.898           7.280
+D041921     34545.898           7.280
 ```
 
 The `F14.3` field of `F3C` contains the integer slot (`205.000` above), so the Orbcomm
